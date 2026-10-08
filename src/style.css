@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap');
 :root{font-family:'Manrope',sans-serif;color:#f8f5ff;background:#151039;color-scheme:dark;font-synthesis:none;font-weight:400;--ink:#f8f5ff;--orange:#ffb747;--blue:#ffca67;--line:#ffffff24}
 *{box-sizing:border-box}
-body{margin:0;min-width:320px;min-height:100vh;background:linear-gradient(135deg,#10102f 0%,#241647 52%,#48316a 100%);background-attachment:fixed}
+body{margin:0;min-width:320px;min-height:100vh;background:linear-gradient(135deg,#10102f 0%,#241647 52%,#48316a 100%);background-repeat:no-repeat;background-size:100% 100%}
 button,a,input{-webkit-tap-highlight-color:transparent}
 button{font:inherit;cursor:pointer;color:inherit}
 button:disabled{cursor:default}
