@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => { await page.goto('/'); });
 
-test('all six experiments render without horizontal overflow', async ({ page }, testInfo) => {
+test('all seven experiments render without horizontal overflow', async ({ page }, testInfo) => {
   await expect(page).toHaveTitle(/Weird Interactions/);
-  await expect(page.locator('main section')).toHaveCount(6);
+  await expect(page.locator('main section')).toHaveCount(7);
   await expect(page.locator('.eyebrow')).toHaveText('A PLAYGROUND FOR QUESTIONABLE UX');
   await expect(page.locator('.intro')).not.toContainText('✳');
   await page.evaluate(() => document.fonts.ready);
@@ -129,4 +129,84 @@ test('global reset cancels active progress and resets every panel', async ({ pag
 test('reduced-motion disables decorative transitions', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await page.locator('.shy-button').evaluate(el => getComputedStyle(el).transitionDuration)).toBe('0s');
+});
+
+test('game earns typing slots, limits Unicode and paste, and refunds deletions', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const input = page.getByRole('textbox', { name: 'Your victory message' });
+  await input.fill('not yet');
+  await expect(input).toHaveValue('');
+  await page.getByRole('button', { name: 'Start game', exact: true }).click();
+  await page.getByRole('button', { name: 'Drop ↓', exact: true }).click();
+  await expect(page.getByText('1 row · 4 slots earned')).toBeVisible();
+  await input.fill('👩🏽‍💻🇫🇷e\u0301🐈Z');
+  await expect(input).toHaveValue('👩🏽‍💻🇫🇷e\u0301🐈');
+  await expect(page.locator('.typing-budget')).toContainText('0 characters available');
+  await input.fill('abc');
+  await expect(page.locator('.typing-budget')).toContainText('1 character available');
+  await input.press('End');
+  // insertText follows the browser's text insertion path, as paste does, without clipboard permissions.
+  await page.keyboard.insertText('defgh');
+  await expect(input).toHaveValue('abcd');
+  await input.press('Backspace');
+  await expect(input).toHaveValue('abc');
+  await input.press('ArrowLeft');
+  await expect(page.getByRole('button', { name: 'Play for more' })).toBeVisible();
+  const screenshot = testInfo.outputPath('earned-words-panel.png');
+  await page.locator('.typing-panel').screenshot({ path: screenshot, animations: 'disabled' });
+  await testInfo.attach('Earn your words panel', { path: screenshot, contentType: 'image/png' });
+});
+
+test('game supports keyboard steering and touch buttons for the second row', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: 'Start game', exact: true }).click();
+  await page.keyboard.press('Space');
+  await expect(page.getByText('1 row · 4 slots earned')).toBeVisible();
+  await page.getByRole('button', { name: 'Play for more' }).click();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('group', { name: /Block game board/ })).toHaveAttribute('aria-label', /columns 4 and 5/);
+  await page.keyboard.press('ArrowLeft');
+  await page.getByRole('button', { name: 'Move block left' }).click();
+  await page.getByRole('button', { name: 'Move block left' }).click();
+  await page.getByRole('button', { name: 'Drop ↓', exact: true }).click();
+  await expect(page.getByText('2 rows · 8 slots earned')).toBeVisible();
+  await page.getByRole('button', { name: 'Retry board' }).click();
+  await expect(page.getByText('2 rows · 8 slots earned')).toBeVisible();
+});
+
+test('falling pauses on exit and reset cancels game timers and clears text', async ({ page }) => {
+  await page.clock.install();
+  await page.getByRole('button', { name: 'Start game', exact: true }).click();
+  await page.clock.runFor(950);
+  const board = page.getByRole('group', { name: /Block game board/ });
+  await expect(board).toHaveAttribute('aria-label', /row 2\./);
+  const input = page.getByRole('textbox', { name: 'Your victory message' });
+  await input.focus();
+  await page.clock.runFor(2000);
+  await expect(board).toHaveAttribute('aria-label', /row 2\./);
+  await page.getByRole('button', { name: 'Start game', exact: true }).click();
+  await page.getByRole('button', { name: 'Drop ↓', exact: true }).click();
+  await input.fill('hi');
+  await page.getByRole('button', { name: 'Play for more' }).click();
+  await page.getByRole('button', { name: 'Reset everything' }).click();
+  await page.clock.runFor(5000);
+  await expect(input).toHaveValue('');
+  await expect(page.getByText('0 rows · 0 slots earned')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start game', exact: true })).toBeVisible();
+  await expect(board).toHaveAttribute('aria-label', /row 1\./);
+});
+
+test('reduced motion waits for manual moves and paused keys leave the board alone', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.install();
+  await page.getByRole('button', { name: 'Start game', exact: true }).click();
+  await page.clock.runFor(5000);
+  const board = page.getByRole('group', { name: /Block game board/ });
+  await expect(board).toHaveAttribute('aria-label', /row 1\./);
+  await page.keyboard.press('ArrowDown');
+  await expect(board).toHaveAttribute('aria-label', /row 2\./);
+  await page.getByRole('button', { name: 'Pause game' }).click();
+  await board.focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(board).toHaveAttribute('aria-label', /row 2\./);
 });

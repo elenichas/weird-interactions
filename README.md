@@ -1,6 +1,6 @@
 # Weird Interactions
 
-A tiny, original gallery of six deliberately unhelpful interfaces. React + TypeScript + Vite; no backend, analytics, cookies, accounts, or stored state.
+A tiny, original gallery of seven deliberately unhelpful interfaces. React + TypeScript + Vite; no backend, analytics, cookies, accounts, or stored state.
 
 ## Run
 
@@ -30,6 +30,7 @@ Playwright covers desktop Chromium and iPhone-sized WebKit, including keyboard o
 4. **The backwards welcome** goes from step 3 to step 1.
 5. **The situationship switch** cycles through indecisive moods without ever claiming to be on.
 6. **The perfectionist loader** stalls at 99% until you accept imperfection.
+7. **Earn your words** makes you clear tiny falling-domino rows to earn four grapheme-safe character slots each, up to 80. Text is only a toy message, never a real password. Deleting refunds slots; pasted text follows the same limit. Game controls work by touch and scoped keyboard input. Leaving the game pauses falling; reduced motion uses manual drops. Retry keeps earned slots, while Reset everything clears the game and text.
 
 The page shell is intentionally reliable. Reset clears all experiments and timers. Jokes never move outside their own panel, trap navigation, submit data, or require endless effort. System reduced-motion preferences disable transitions.
 
