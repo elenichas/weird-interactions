@@ -2,11 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => { await page.goto('/'); });
 
-test('all six experiments render without horizontal overflow', async ({ page }) => {
+test('all six experiments render without horizontal overflow', async ({ page }, testInfo) => {
   await expect(page).toHaveTitle(/Weird Interactions/);
   await expect(page.locator('main section')).toHaveCount(6);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(page.getByRole('navigation', { name: 'Inspiration' }).getByRole('link')).toHaveCount(3);
+  await page.evaluate(() => document.fonts.ready);
+  const screenshot = testInfo.outputPath('gallery-full-page.png');
+  await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
+  await testInfo.attach('Gallery full-page appearance', { path: screenshot, contentType: 'image/png' });
 });
 
 test('slider changes while held and snaps back when released', async ({ page }) => {

@@ -37,4 +37,4 @@ The page shell is intentionally reliable. Reset clears all experiments and timer
 
 Researched before implementation: [Matt West's Bad UI](https://mattw.io/bad-ui/), [User Inyerface](https://userinyerface.com/), and [Goulart Nogueira's BadUI](https://goulartnogueira.github.io/BadUI/). This project uses original code, copy, visual design, and bounded interaction treatments; no assets or code were copied from these references.
 
-Typography uses DM Sans and Space Grotesk from Google Fonts with local sans-serif fallbacks. The SVG favicon is original. Build output is static and suitable for private Sites hosting; access control belongs to the host, not the client app.
+The visual theme uses one continuous indigo-to-violet background gradient, frosted-glass panels, and warm gradient accents, without decorative background circles. Typography uses Manrope and Montserrat from Google Fonts with local sans-serif fallbacks. The SVG favicon is original. Build output is static and suitable for private Sites hosting; access control belongs to the host, not the client app.
