@@ -26,7 +26,7 @@ Playwright covers desktop Chromium and iPhone-sized WebKit, including keyboard o
 
 1. **The noncommittal slider** springs back to 50 on release, blur, or cancellation.
 2. **The shy button** dodges five times. Touch attempts move it too. Keyboard activation or “Stay still” catches it immediately.
-3. **The bargaining counter** accepts every third request.
+3. **The stubborn dropdown** picks the mood after the one you chose, wrapping back to the first option.
 4. **The backwards welcome** goes from step 3 to step 1.
 5. **The situationship switch** cycles through indecisive moods without ever claiming to be on.
 6. **The perfectionist loader** stalls at 99% until you accept imperfection.

@@ -2,11 +2,11 @@
 :root{font-family:'Manrope',sans-serif;color:#f8f5ff;background:#151039;color-scheme:dark;font-synthesis:none;font-weight:400;--ink:#f8f5ff;--orange:#ffb747;--blue:#ffca67;--line:#ffffff24}
 *{box-sizing:border-box}
 body{margin:0;min-width:320px;min-height:100vh;background:linear-gradient(135deg,#10102f 0%,#241647 52%,#48316a 100%);background-repeat:no-repeat;background-size:100% 100%}
-button,a,input{-webkit-tap-highlight-color:transparent}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
 button{font:inherit;cursor:pointer;color:inherit}
 button:disabled{cursor:default}
 a{color:inherit;text-underline-offset:4px}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:5px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:5px}
 .page{max-width:1320px;margin:auto;padding:0 48px}
 header{min-height:113px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:24px}
 .wordmark{display:flex;gap:12px;align-items:center;text-decoration:none;font-weight:800;font-size:13px;line-height:1.12;letter-spacing:.7px}
@@ -19,7 +19,6 @@ header{min-height:113px;border-bottom:1px solid var(--line);display:flex;align-i
 .reset-button span{font-size:19px;margin-left:9px}
 .intro{display:flex;align-items:center;justify-content:space-between;padding:43px 0 38px;gap:30px}
 .eyebrow{font-size:12px;letter-spacing:1.3px;display:flex;align-items:center;gap:9px;margin-bottom:18px}
-.asterisk{font-size:24px;color:var(--orange);line-height:1}
 h1{font-family:'Montserrat',sans-serif;font-size:clamp(40px,4.6vw,64px);line-height:1.05;letter-spacing:-2.5px;margin:0;font-weight:600}
 h1>span{color:#d4c9f1}
 .intro-aside{display:flex;align-items:center;gap:29px;padding-top:36px}
@@ -53,11 +52,13 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .remark-row{justify-content:space-between;gap:8px}
 .text-button{border:0;background:none;color:#ffda97;font-size:12px;padding:3px 0;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .text-button:disabled{opacity:.45}
-.counter-experiment{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-.counter-controls{display:flex;align-items:center;gap:21px}
-.counter-controls button{width:43px;height:43px;border:1px solid #ffffff80;background:transparent;border-radius:12px;font-size:27px;line-height:1}
-.counter-controls button:hover{background:#ffffff20}
-.counter-controls output{font-family:'Montserrat',sans-serif;font-size:54px;letter-spacing:-4px;min-width:67px;text-align:center}
+.dropdown-experiment{display:flex;flex-direction:column;justify-content:center;gap:12px;padding:18px 0 22px}
+.select-wrap{position:relative;width:100%}
+.select-wrap select{appearance:none;-webkit-appearance:none;width:100%;min-height:48px;border:1px solid #ffffff80;border-radius:9px;background:#22183c80;color:var(--ink);font:inherit;font-size:14px;padding:12px 38px 12px 14px;cursor:pointer}
+.select-wrap select:hover{background:#ffffff16}
+.select-wrap option{background:#302248;color:var(--ink)}
+.select-wrap>span{position:absolute;right:15px;top:50%;transform:translateY(-60%);color:var(--orange);font-size:23px;pointer-events:none}
+.dropdown-hint{font-size:12px;line-height:1.5;color:#d1c8e3;min-height:36px}
 .tiny-label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#d1c8e3}
 .wizard-panel{background:linear-gradient(145deg,#ffffff21,#ffffff08)}
 .wizard-panel .tag{border-color:#ffffff36}
@@ -151,7 +152,7 @@ footer nav{margin-top:19px;gap:17px;font-size:12px;flex-wrap:wrap}
 .progress-value .loading-note{font-size:12px}
 .chase-area{min-height:188px}
 .shy-button{min-height:44px}
-.counter-controls button{width:46px;height:46px}
+.select-wrap select{font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }

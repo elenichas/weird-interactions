@@ -5,9 +5,11 @@ test.beforeEach(async ({ page }) => { await page.goto('/'); });
 test('all six experiments render without horizontal overflow', async ({ page }, testInfo) => {
   await expect(page).toHaveTitle(/Weird Interactions/);
   await expect(page.locator('main section')).toHaveCount(6);
+  await expect(page.locator('.eyebrow')).toHaveText('A PLAYGROUND FOR QUESTIONABLE UX');
+  await expect(page.locator('.intro')).not.toContainText('✳');
+  await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(page.getByRole('navigation', { name: 'Inspiration' }).getByRole('link')).toHaveCount(3);
-  await page.evaluate(() => document.fonts.ready);
   const screenshot = testInfo.outputPath('gallery-full-page.png');
   await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
   await testInfo.attach('Gallery full-page appearance', { path: screenshot, contentType: 'image/png' });
@@ -36,15 +38,44 @@ test('shy button accepts keyboard activation immediately', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Okay, hi! ♡' })).toBeVisible();
 });
 
-test('counter negotiates twice and accepts every third request', async ({ page }) => {
-  const plus = page.getByRole('button', { name: 'Increase counter' });
-  const minus = page.getByRole('button', { name: 'Decrease counter' });
-  const output = page.getByLabel('Counter value');
-  await plus.click(); await expect(output).toHaveText('00');
-  await plus.click(); await expect(output).toHaveText('00');
-  await plus.click(); await expect(output).toHaveText('01');
-  await minus.click(); await minus.click(); await minus.click();
-  await expect(output).toHaveText('00');
+test('dropdown picks the next mood and wraps around on repeated choices', async ({ page }) => {
+  const dropdown = page.getByRole('combobox', { name: 'Pick your mood' });
+  await expect(dropdown).toHaveValue('');
+  for (const [requested, chosen] of [
+    ['Feeling focused', 'Feeling sleepy'],
+    ['Feeling social', 'Feeling mysterious'],
+    ['Feeling mysterious', 'Feeling focused'],
+    ['Feeling sleepy', 'Feeling social'],
+    ['Feeling focused', 'Feeling sleepy'],
+  ]) {
+    await dropdown.selectOption(requested);
+    await expect(dropdown).toHaveValue(chosen);
+    await expect(page.getByText(`You asked for: ${requested.toLowerCase()}.`)).toBeVisible();
+    await expect(page.getByText(`“${chosen}.” There. Much more you.`)).toBeVisible();
+  }
+});
+
+test('dropdown accepts a keyboard selection', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'Mobile uses its native touch picker.');
+  const dropdown = page.getByRole('combobox', { name: 'Pick your mood' });
+  await dropdown.focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(dropdown).toHaveValue('Feeling sleepy');
+  await expect(page.getByText('You asked for: feeling focused.')).toBeVisible();
+});
+
+test('dropdown is keyboard reachable and reset restores its initial state', async ({ page }) => {
+  const dropdown = page.getByRole('combobox', { name: 'Pick your mood' });
+  await dropdown.focus();
+  await expect(dropdown).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Next (but backwards)' })).toBeFocused();
+  await dropdown.selectOption('Feeling mysterious');
+  await page.getByRole('button', { name: 'Reset everything' }).click();
+  await expect(dropdown).toHaveValue('');
+  await expect(page.getByText('It always prefers the next option.')).toBeVisible();
+  await dropdown.selectOption('Feeling focused');
+  await expect(dropdown).toHaveValue('Feeling sleepy');
 });
 
 test('welcome moves backwards to a stable finished state', async ({ page }) => {
@@ -81,6 +112,7 @@ test('loader stops at 99 until imperfection is accepted', async ({ page }) => {
 test('global reset cancels active progress and resets every panel', async ({ page }) => {
   await page.clock.install();
   await page.getByRole('switch').click();
+  await page.getByRole('combobox', { name: 'Pick your mood' }).selectOption('Feeling focused');
   await page.getByRole('button', { name: 'Next (but backwards)' }).click();
   await page.getByRole('button', { name: 'Make some progress' }).click();
   await page.clock.runFor(400);
@@ -89,7 +121,7 @@ test('global reset cancels active progress and resets every panel', async ({ pag
   await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   await expect(page.locator('.switch-label')).toHaveText('OFF');
   await expect(page.getByLabel('Step 3 of 3')).toBeVisible();
-  await expect(page.getByLabel('Counter value')).toHaveText('00');
+  await expect(page.getByRole('combobox', { name: 'Pick your mood' })).toHaveValue('');
   await expect(page.getByRole('slider')).toHaveValue('50');
   await expect(page.getByRole('button', { name: 'Click me', exact: true })).toBeVisible();
 });
